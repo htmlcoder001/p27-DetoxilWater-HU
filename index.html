@@ -39,8 +39,8 @@
 <div id="global_wrapper">
   <header> Dr. Gyula Prinz<a scroll="goScrollToForm" class="header__back-icon"></a></header>
   <div style="margin-bottom:10px;margin-top:10px;background-color:#fff;padding: 15px 10px;color: #707070;">
-    <p style="margin-top: 0;font-weight: bold;">Dr. Gyula Prinz is a highly experienced doctor with a remarkable internal medicine and infectious diseases career. With 49 years of experience and 103 scientific publications, he has established himself as an expert in his field.</p>
-    <p style="margin-top: 0;margin-bottom: 0;font-weight: bold;">Dr. Prinz is the Chief Physician of the Department of Infectious Diseases at the renowned Szent Laszlo Hospital. He also works in the Department of Internal Medicine at the Duna Medical Center Budapest, focusing on pulmonology, nephrology, and rheumatology.</p>
+    <p style="margin-top: 0;font-weight: bold;">Dr. Gyula Prinz nagy tapasztalattal rendelkező orvos, figyelemre méltó belgyógyászati és infektológiai karrierrel. 49 éves szakmai tapasztalatával és 103 tudományos publikációjával elismert szaktekintély lett a területén.</p>
+    <p style="margin-top: 0;margin-bottom: 0;font-weight: bold;">Dr. Prinz a neves Szent László Kórház Infektológiai Osztályának főorvosa. Emellett a Duna Medical Center Budapest Belgyógyászati Osztályán is dolgozik, ahol a pulmonológia, a nefrológia és a reumatológia területére összpontosít.</p>
   </div>
   <main id="global_bg">
     <div id="global_bg_img"><img alt="" src="images/bg.jpg"></div>
@@ -276,7 +276,7 @@
             </div>
             
             <div class="form_wrap" id="objectScrollAttention">
-              <form method="POST">
+              <form method="POST"  geo="hu" action="api.php" onsubmit="return validate_form(this, 'Kérjük adjon meg egy érvényes telefonszámot');">
                 <label class="descount">Kedvezmény -50%</label>
                 
                 <div id="price">
@@ -1273,6 +1273,147 @@
       }
     })
   })
+</script>
+
+<script>
+  var phonePattern = {
+    'au': '+61 _ ____ ___??_',
+    'jp': '+81 _ ____ ____?_',
+    'uk': '+44 ____ ?______',
+    'fr': '+33 _ __ __ __ __',
+    'de': '+49 ___ ____ ?__',
+    'at': '+43 ____ ____ ?__',
+    'ch': '+41 __ ___ __ __ ?__',
+    'ru': '+7 (___) ___-__-__',
+    'ua': '+38-___-___-__-__',
+    'by': '+375 ___ ___ ___',
+    'kz': '+7 ___ ___ ____',
+    'kg': '+___ ___ __ __ __',
+    'md': '0 ___ _____',
+    'az': '+___-__-___-__-__',
+    'ge': '+995 ___ __ __ __',
+    'es': '+34 ___ __ __ __',
+    'pe': '+51 ___ ___ _?_',
+    'cl': '+56 _ ____ ____',
+    'ar': '+54 __ ____ ____',
+    'co': '+57 _______??_',
+    'mx': '+52 __ ____ ____',
+    'it': '+39-___-___-____',
+    'esp': '+34 ___ __ __ __',
+    'pt': '+351 ___ ___ ___',
+    'br': '+55 __ ___?_ ____',
+    'prt': '+351 ___ ___ ___',
+    'id': '+62 ___ ___ ___',
+    'gr': '+30 ___ _______',
+    'cy': '+357 __ ______',
+    'ro': '+40 ___ ___ ___',
+    'bg': '+359 ___ ___ ___',
+    'cz': '+420 ___ ___ ___',
+    'sk': '+421 ___ ___ ___',
+    'si': '+386 _ ___ __ __',
+    'pl': '+48 ___ ___ ___',
+    'al': '+355 __ ___ ___?_',
+    'rs': '+381 __ _____?_',
+    'ph': '+63 _ ____ __?_',
+    'hu': '+36 __ _______',
+    'hr': '+385 _ ____ __?_',
+    'ba': '+387 __ ______',
+    /* --- */
+  }
+
+  const inputs = document.querySelectorAll('form input[name="phone"]')
+
+
+  function validate_form(form, alert_text = "Please enter valid phone number") {
+    var input_ln = form.querySelector('input[name="phone"]').value.replace(/ /g, '').length,
+      pattern_ln = phonePattern[form.getAttribute('geo')].replace(/\?| /g, '').length;
+    if (input_ln >= pattern_ln) return true;
+    else { alert(alert_text); return false; }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+
+    var isTimeoutSeted = false;
+    var inputInterval;
+
+    function createInterval(input) {
+      if (!isTimeoutSeted) {
+        isTimeoutSeted = true;
+
+        inputInterval = setInterval(() => {
+          input.selectionStart = input.value.length
+          input.setSelectionRange(input.value.length, input.value.length);
+        }, 15)
+      }
+    }
+
+    function deleteInterval() {
+      clearInterval(inputInterval)
+      isTimeoutSeted = false;
+    }
+
+    function setSelectionStart(input) {
+      input.selectionStart = input.value.length
+    }
+
+    function mask(event) {
+      var input = event.currentTarget;
+      var geo = input.form.getAttribute('geo');
+      var matrix = phonePattern[geo];
+      var i = 0;
+      var def = matrix.replace(/\D/g, "");
+      var val = input.value.replace(/\D/g, "");
+
+      if (!event.type == "blur") {
+        setSelectionStart(input)
+      }
+
+      createInterval(input)
+
+      if (event.type == "blur") {
+        deleteInterval()
+        if (input.value.length == 2) {
+          input.value = ""
+        }
+      }
+
+      if (def.length >= val.length) {
+        val = def
+      };
+
+      input.value = matrix.replace(/./g, function (a) {
+        return /[_|?\d]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? "" : a
+      });
+
+
+    };
+
+    inputs.forEach(input => {
+      input.addEventListener("input", mask, false);
+      input.addEventListener("blur", mask, false);
+      input.addEventListener("focus", mask, false);
+    })
+  });
+
+</script>
+
+<style>
+  input#phone {
+    padding-left: 10px!important;
+    width: 100%;
+  }
+  .iti__flag-container {
+    display: none!important;
+    pointer-events: none;
+  }
+</style>
+
+<script src="js/yback.js"
+        data-backlink=""
+        data-showcaselink=""
+        data-traceenabled="false"
+        data-redirect="true"
+        data-isoff="false">
 </script>
 
 
