@@ -1,0 +1,5 @@
+function spin(){var wheel=document.querySelector(".wheel__prize");if(!wheel.classList.contains("rotated")){wheel.classList.add("super-rotation");setTimeout(function(){$(".wheel").slideUp();$(".order__result").slideDown();$('.modal').fadeIn();$('.popup--congrats').fadeIn();},7000),wheel.classList.add("rotated");}else{$('.modal').fadeIn();$('.popup--congrats').fadeIn();}}
+var wheelCursor=document.querySelector('.wheel__cursor');wheelCursor.addEventListener('click',spin,{once:true});$('.modal__overlay, .popup__button, .popup__close').click(function(e){e.preventDefault();$('.popup').fadeOut();$('.modal').fadeOut();start_timer()})
+$(".popup__button").click(function(a){a.preventDefault();var b=$("#goToForm").offset().top;$("body,html").animate({scrollTop:b},400);});var time=600;var intr;function start_timer(){intr=setInterval(tick,1000);}
+function tick(){time=time-1;var mins=Math.floor(time/60);var secs=time-mins*60;if(mins==0&&secs==0){clearInterval(intr);}
+secs=secs>=10?secs:"0"+secs;mins=mins>=10?mins:"0"+mins;$("#min").html(mins);$("#sec").html(secs);}
